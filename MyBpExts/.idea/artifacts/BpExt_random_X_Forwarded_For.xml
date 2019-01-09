@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="BpExt_random_X-Forwarded-For">
+    <output-path>$PROJECT_DIR$/out/artifacts/BpExt_random_X_Forwarded_For</output-path>
+    <root id="archive" name="BpExt_random_X-Forwarded-For.jar" />
+  </artifact>
+</component>
