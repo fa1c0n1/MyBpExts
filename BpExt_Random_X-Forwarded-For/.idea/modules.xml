@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$//BpExt_random_X-Forward-For.iml" filepath="$PROJECT_DIR$//BpExt_random_X-Forward-For.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BpExt_Random_X-Forwarded-For.iml" filepath="$PROJECT_DIR$/BpExt_Random_X-Forwarded-For.iml" />
     </modules>
   </component>
 </project>
