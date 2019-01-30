@@ -2,16 +2,10 @@ package burp;
 
 import me.falcon.ui.MainUI;
 
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.plaf.PopupMenuUI;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +38,7 @@ public class BurpExtender extends MainUI implements IBurpExtender, ITab, ITextEd
             menuItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    textAreaRawCipherRd.setText(new String(BurpExtender.this.getSelectedText()));
+
                 }
             });
 
