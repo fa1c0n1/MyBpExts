@@ -1,10 +1,13 @@
 package me.falcon.utils;
 
 import org.apache.commons.codec.binary.Hex;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
+import java.security.Security;
 
 public class AESUtils {
 
@@ -28,6 +31,15 @@ public class AESUtils {
         byte[] plainData = cipher.doFinal(Hex.decodeHex(cipherDataHexStr.toCharArray()));
         retStr = new String(plainData);
         return retStr;
+    }
+
+    public static byte[] aesDecryptByBC(String aesKey, byte[] cipherData, String workMode) throws Exception {
+        Security.addProvider(new BouncyCastleProvider());
+        Key key = new SecretKeySpec(aesKey.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance(workMode);
+        cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(aesKey.getBytes()));
+        byte[] plainData = cipher.doFinal(cipherData);
+        return plainData;
     }
 
     public static String aesPadding16(String plainData) {
