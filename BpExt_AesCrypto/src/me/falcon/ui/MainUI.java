@@ -1,7 +1,8 @@
 package me.falcon.ui;
 
-import jdk.nashorn.internal.scripts.JO;
 import me.falcon.utils.AESUtils;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -36,6 +37,7 @@ public class MainUI extends JFrame {
     public JTextField textFieldAesKey;
     public JComboBox cmboxMode;
     public JComboBox cmboxPadding;
+    public JComboBox cmboxCipherDataForm;
 
     public MainUI() {
         mainPanel = new JPanel();
@@ -70,6 +72,12 @@ public class MainUI extends JFrame {
         cmboxPadding.addItem("NoPadding");
         cmboxPadding.addItem("PKCS5Padding");
         cmboxPadding.addItem("PKCS7Padding");
+        cmboxPadding.addItem("ZeroBytePadding");
+        cmboxPadding.addItem("ISO10126Padding");
+
+        cmboxCipherDataForm = new JComboBox();
+        cmboxCipherDataForm.addItem("Hex");
+        cmboxCipherDataForm.addItem("Base64");
 
         textAreaPlain.addFocusListener(new JTextComponentHintListener(textAreaPlain, "请输入数据明文"));
         textAreaCipher.addFocusListener(new JTextComponentHintListener(textAreaCipher,"请输入数据密文"));
@@ -81,13 +89,20 @@ public class MainUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String aesKey = textFieldAesKey.getText();
-                String cipherDataHexStr = textAreaCipher.getText().trim();
+                String cipherDataStr = textAreaCipher.getText().trim();
                 String mode = (String) cmboxMode.getSelectedItem();
                 String padding = (String) cmboxPadding.getSelectedItem();
                 String workMode = "AES" + "/" + mode + "/" + padding;
+                String cipherDataForm = (String) cmboxCipherDataForm.getSelectedItem();
                 try {
                     textAreaPlain.setForeground(Color.BLACK);
-                    textAreaPlain.setText(AESUtils.aesDecrypt(aesKey, cipherDataHexStr, workMode).trim());
+                    if ("Hex".equals(cipherDataForm)) {
+                        byte[] cipherData = Hex.decodeHex(cipherDataStr.toCharArray());
+                        textAreaPlain.setText(new String(AESUtils.aesDecrypt(aesKey, cipherData, workMode), "utf-8").trim());
+                    } else if ("Base64".equals(cipherDataForm)) {
+                        byte[] cipherData = Base64.decodeBase64(cipherDataStr);
+                        textAreaPlain.setText(new String(AESUtils.aesDecrypt(aesKey, cipherData, workMode), "utf-8").trim());
+                    }
                 } catch (Exception e1) {
                     e1.printStackTrace();
                     JOptionPane.showMessageDialog(mainPanel, e1.getMessage(), "解密失败", PLAIN_MESSAGE);
@@ -102,13 +117,21 @@ public class MainUI extends JFrame {
                 String mode = (String) cmboxMode.getSelectedItem();
                 String padding = (String) cmboxPadding.getSelectedItem();
                 String plainData = textAreaPlain.getText().trim();
-                if ("NoPadding".equals(padding)) {
-                    plainData = AESUtils.aesPadding16(plainData);
-                }
-                String workMode = "AES" + "/" + mode + "/" + padding;
+                String cipherDataForm = (String) cmboxCipherDataForm.getSelectedItem();
                 try {
+                    if ("NoPadding".equals(padding)) {
+                        plainData = AESUtils.aesPadding16(plainData);
+                    }
+                    String workMode = "AES" + "/" + mode + "/" + padding;
                     textAreaCipher.setForeground(Color.BLACK);
-                    textAreaCipher.setText(AESUtils.aesEncrypt(aesKey, plainData, workMode));
+                    byte[] cipherData = AESUtils.aesEncrypt(aesKey, plainData.getBytes("utf-8"), workMode);
+                    if ("Hex".equals(cipherDataForm)) {
+                        String cipherStr = Hex.encodeHexString(cipherData);
+                        textAreaCipher.setText(cipherStr);
+                    } else if ("Base64".equals(cipherDataForm)) {
+                        String cipherStr = Base64.encodeBase64String(cipherData);
+                        textAreaCipher.setText(cipherStr);
+                    }
                 } catch (Exception e1) {
                     e1.printStackTrace();
                     JOptionPane.showMessageDialog(mainPanel, e1.getMessage(), "加密失败", PLAIN_MESSAGE);
@@ -119,6 +142,7 @@ public class MainUI extends JFrame {
         optionPanel.add(textFieldAesKey);
         optionPanel.add(cmboxMode);
         optionPanel.add(cmboxPadding);
+        optionPanel.add(cmboxCipherDataForm);
         optionPanel.add(btnDecrypt);
         optionPanel.add(btnEncrypt);
 
